@@ -6,6 +6,9 @@ DebugOff();
 
 var shuffleSequence = seq("setcounter",
 						//  "begin",
+                          "consent",
+                          "IDentry",
+                          "instructions",
                           "startpractice",
                           sepWith("sep", seq("practice")),
                           "starter",
@@ -35,6 +38,39 @@ var defaults = ["Maze", {redo: true, time:500}];
 // The following example inserts a "pause" Message at every nth item (where i % n)
 // The % operator returns the remainder of two numbers, so will be 0 when a multiple of n
 
+function modifyRunningOrder(ro) {
+    var item_count = 0;
+
+    var breakAfter = [22, 24];
+
+    for (var i = 0; i < ro.length; i++) {
+        var item = ro[i];
+        var type = item[0].type;
+
+        // 使用你实际的条件名：exp 和 fill
+        if (
+            typeof type === "string" &&
+            (type.startsWith("exp") || type.startsWith("fill"))
+        ) {
+            item_count++;
+
+            if (breakAfter.indexOf(item_count) !== -1) {
+                var text = item_count === breakAfter[0]
+                    ? "End of block. 2 blocks left."
+                    : "End of block. Only 1 block left!";
+
+                item.push(new DynamicElement("Message", {
+                    html: "<p>" + text + "</p>" +
+                          "<p>30-second break. Stretch and look away " +
+                          "from the screen briefly if needed.</p>",
+                    transfer: 30000
+                }));
+            }
+        }
+    }
+
+    return ro;
+}
 
 var items = [
 
@@ -43,6 +79,16 @@ var items = [
 	["sendresults", "__SendResults__", { }],
 
 	["sep", "MazeSeparator", {normalMessage: "Correct! Press any key to continue", errorMessage: "Incorrect! Press any key to continue."}],
+    
+    
+    ["consent", "Form", {
+        html: {include: "consent.html"}
+    }],
+
+    ["instructions", "Message", {
+        html: {include: "intro.html"}
+    }],
+    
 //["begin", "Form", { html: { include: "consent.html" } } ],
 //   ["begin", "Form", { html: { include: "intro.html" } } ],
 //   ["begin", "Form", { html: { include: "welcome.html" } } ],
@@ -234,4 +280,24 @@ var items = [
 // leave this bracket - it closes the items section
 ];
 
+newTrial("IDentry",
+    newVar("partID").global(),
 
+    newText("instr", "Please enter your Prolific ID:").print(),
+
+    newHtml(
+        "partpage",
+        "<input type='text' id='partID' name='participant ID' min='1' max='120'>"
+    ).print(),
+
+    newButton("Next").print().wait(
+        getVar("partID")
+            .set(v => $("#partID").val())
+            .testNot.is('')
+    )
+);
+
+Header(
+    newVar("partID").global()
+)
+.log("partID", getVar("partID"));
