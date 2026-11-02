@@ -15,7 +15,7 @@ var shuffleSequence = seq("setcounter",
                           sepWith("sep", rshuffle(startsWith("exp"), startsWith("fill"))),
                     //      "further-information",
              			     "sendresults",
-                      //    "completion",
+                      "completion",
                 );
 
 var showProgressBar =false;
@@ -41,13 +41,12 @@ var defaults = ["Maze", {redo: true, time:500}];
 function modifyRunningOrder(ro) {
     var item_count = 0;
 
-    var breakAfter = [22, 24];
+    var breakAfter = [22, 44];
 
     for (var i = 0; i < ro.length; i++) {
         var item = ro[i];
         var type = item[0].type;
 
-        // 使用你实际的条件名：exp 和 fill
         if (
             typeof type === "string" &&
             (type.startsWith("exp") || type.startsWith("fill"))
@@ -275,7 +274,7 @@ var items = [
 
 
 //["further-information", "Form", { html: { include: "further-information.html" } } ],
-//["completion", "Form", {continueMessage: null, html: { include: "completion.html" } } ]
+    ["completion", "Form", {continueMessage: null, html: { include: "completion.html" } } ]
 
 // leave this bracket - it closes the items section
 ];
